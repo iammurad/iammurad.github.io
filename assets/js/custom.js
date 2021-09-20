@@ -18,7 +18,6 @@ window.fbAsyncInit = function() {
 }(document, 'script', 'facebook-jssdk'));
 
 // Preloader
-var loader = document.getElementById("preloader");
-window.addEventListener("load",function(){
-  loader.style.display="none";
-});
+$(window).on("load",function(){
+  $(".loader-container").fadeOut(1000);
+})
