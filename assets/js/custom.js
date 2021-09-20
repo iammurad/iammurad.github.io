@@ -16,3 +16,9 @@ window.fbAsyncInit = function() {
   js.src = 'https://connect.facebook.net/tr_TR/sdk/xfbml.customerchat.js';
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
+
+// Preloader
+var loader = document.getElementById("preloader");
+window.addEventListener("load",function(){
+  loader.style.display="none";
+});

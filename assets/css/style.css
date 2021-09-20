@@ -1027,3 +1027,12 @@ section .container {
   99% { background-color: transparent; }
   100%  { background-color: #ccc; }
 }
+/* Preloader */
+#preloader{
+  background: #000 url(/assets/img/preloader/preloader.gif) no-repeat center center;
+  background-size: 10%;
+  height: 100vh;
+  position: fixed;
+  width: 100%;
+  z-index: 100000000;
+}
