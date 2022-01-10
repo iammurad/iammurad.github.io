@@ -1,289 +1,532 @@
-/**
-* Template Name: Personal - v4.4.0
-* Template URL: https://bootstrapmade.com/personal-free-resume-bootstrap-template/
-* Author: BootstrapMade.com
-* License: https://bootstrapmade.com/license/
-*/
-(function() {
-  "use strict";
+    "use strict";
 
-  /**
-   * Easy selector helper function
-   */
-  const select = (el, all = false) => {
-    el = el.trim()
-    if (all) {
-      return [...document.querySelectorAll(el)]
-    } else {
-      return document.querySelector(el)
-    }
-  }
 
-  /**
-   * Easy event listener function
-   */
-  const on = (type, el, listener, all = false) => {
-    let selectEl = select(el, all)
+    /*--
+        preloader
+    -----------------------------------*/
+     $(window).on('load', function(event) {
+        $('#preloader').delay(500).fadeOut(500);
+    });
 
-    if (selectEl) {
-      if (all) {
-        selectEl.forEach(e => e.addEventListener(type, listener))
-      } else {
-        selectEl.addEventListener(type, listener)
-      }
-    }
-  }
+    /*--
+        Header Sticky
+    -----------------------------------*/
 
-  /**
-   * Scrolls to an element with header offset
-   */
-  const scrollto = (el) => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
+    window.onscroll = function () {
+        const left = document.getElementById("header");
+
+        if (left.scrollTop > 50 || self.pageYOffset > 50) {
+            left.classList.add("sticky")
+        } else {
+            left.classList.remove("sticky");
+        }
+    }    
+
+    
+    /*--
+        Menu parent Element Icon
+    -----------------------------------*/
+    const $subMenu = document.querySelectorAll('.sub-menu');
+    $subMenu.forEach(function (subMenu) {
+        const menuExpand = document.createElement('span')
+        menuExpand.classList.add('menu-icon')
+        // menuExpand.innerHTML = '+'
+        subMenu.parentElement.insertBefore(menuExpand, subMenu)
+        if (subMenu.classList.contains('mega-menu')) {
+            subMenu.classList.remove('mega-menu')
+            subMenu.querySelectorAll('ul').forEach(function (ul) {
+                ul.classList.add('sub-menu')
+                const menuExpand = document.createElement('span')
+                menuExpand.classList.add('menu-icon')
+                menuExpand.innerHTML = '+'
+                ul.parentElement.insertBefore(menuExpand, ul)
+            })
+        }
     })
-  }
 
-  /**
-   * Mobile nav toggle
-   */
-  on('click', '.mobile-nav-toggle', function(e) {
-    select('#navbar').classList.toggle('navbar-mobile')
-    this.classList.toggle('bi-list')
-    this.classList.toggle('bi-x')
-  })
+    /*--
+        Search Js
+    -----------------------------------*/
+	var $searchWrap = $('.search-wrap');
+	var $navSearch = $('.search-btn');
+	var $searchClose = $('#search-close');
 
-  /**
-   * Scrool with ofset on links with a class name .scrollto
-   */
-  on('click', '#navbar .nav-link', function(e) {
-    let section = select(this.hash)
-    if (section) {
-      e.preventDefault()
+	$('.search-btn').on('click', function (e) {
+		e.preventDefault();
+		$searchWrap.animate({ opacity: 'toggle' }, 500);
+		$navSearch.add($searchClose).addClass("open");
+	});
 
-      let navbar = select('#navbar')
-      let header = select('#header')
-      let sections = select('section', true)
-      let navlinks = select('#navbar .nav-link', true)
+	$('.search-close').on('click', function (e) {
+		e.preventDefault();
+		$searchWrap.animate({ opacity: 'toggle' }, 500);
+		$navSearch.add($searchClose).removeClass("open");
+	});
 
-      navlinks.forEach((item) => {
-        item.classList.remove('active')
-      })
+	function closeSearch() {
+		$searchWrap.fadeOut(200);
+		$navSearch.add($searchClose).removeClass("open");
+	}
 
-      this.classList.add('active')
+	$(document.body).on('click', function (e) {
+		closeSearch();
+	});
 
-      if (navbar.classList.contains('navbar-mobile')) {
-        navbar.classList.remove('navbar-mobile')
-        let navbarToggle = select('.mobile-nav-toggle')
-        navbarToggle.classList.toggle('bi-list')
-        navbarToggle.classList.toggle('bi-x')
-      }
+	$(".search-btn, .main-search-input").on('click', function (e) {
+		e.stopPropagation();
+	});
 
-      if (this.hash == '#header') {
-        header.classList.remove('header-top')
-        sections.forEach((item) => {
-          item.classList.remove('section-show')
-        })
-        return;
-      }
+        
+    /*--
+        Mobile Menu 
+    -----------------------------------*/
 
-      if (!header.classList.contains('header-top')) {
-        header.classList.add('header-top')
-        setTimeout(function() {
-          sections.forEach((item) => {
-            item.classList.remove('section-show')
-          })
-          section.classList.add('section-show')
-
-        }, 350);
-      } else {
-        sections.forEach((item) => {
-          item.classList.remove('section-show')
-        })
-        section.classList.add('section-show')
-      }
-
-      scrollto(this.hash)
+    /* Get Sibling */
+    const getSiblings = function (elem) {
+        const siblings = []
+        let sibling = elem.parentNode.firstChild
+        while (sibling) {
+            if (sibling.nodeType === 1 && sibling !== elem) {
+                siblings.push(sibling)
+            }
+            sibling = sibling.nextSibling
+        }
+        return siblings
     }
-  }, true)
 
-  /**
-   * Activate/show sections on load with hash links
-   */
-  window.addEventListener('load', () => {
-    if (window.location.hash) {
-      let initial_nav = select(window.location.hash)
+    /* Slide Up */
+    const slideUp = (target, time) => {
+        const duration = time ? time : 500;
+        target.style.transitionProperty = 'height, margin, padding'
+        target.style.transitionDuration = duration + 'ms'
+        target.style.boxSizing = 'border-box'
+        target.style.height = target.offsetHeight + 'px'
+        target.offsetHeight
+        target.style.overflow = 'hidden'
+        target.style.height = 0
+        window.setTimeout(() => {
+            target.style.display = 'none'
+            target.style.removeProperty('height')
+            target.style.removeProperty('overflow')
+            target.style.removeProperty('transition-duration')
+            target.style.removeProperty('transition-property')
+        }, duration)
+    }
 
-      if (initial_nav) {
-        let header = select('#header')
-        let navlinks = select('#navbar .nav-link', true)
+    /* Slide Down */
+    const slideDown = (target, time) => {
+        const duration = time ? time : 500;
+        target.style.removeProperty('display')
+        let display = window.getComputedStyle(target).display
+        if (display === 'none') display = 'block'
+        target.style.display = display
+        const height = target.offsetHeight
+        target.style.overflow = 'hidden'
+        target.style.height = 0
+        target.offsetHeight
+        target.style.boxSizing = 'border-box'
+        target.style.transitionProperty = 'height, margin, padding'
+        target.style.transitionDuration = duration + 'ms'
+        target.style.height = height + 'px'
+        window.setTimeout(() => {
+            target.style.removeProperty('height')
+            target.style.removeProperty('overflow')
+            target.style.removeProperty('transition-duration')
+            target.style.removeProperty('transition-property')
+        }, duration)
+    }
 
-        header.classList.add('header-top')
+    /* Slide Toggle */
+    const slideToggle = (target, time) => {
+        const duration = time ? time : 500;
+        if (window.getComputedStyle(target).display === 'none') {
+            return slideDown(target, duration)
+        } else {
+            return slideUp(target, duration)
+        }
+    }
 
-        navlinks.forEach((item) => {
-          if (item.getAttribute('href') == window.location.hash) {
-            item.classList.add('active')
-          } else {
-            item.classList.remove('active')
-          }
+
+    /*--
+		Offcanvas/Collapseable Menu 
+	-----------------------------------*/
+    const offCanvasMenu = function (selector) {
+
+        const $offCanvasNav = document.querySelector(selector),
+            $subMenu = $offCanvasNav.querySelectorAll('.sub-menu');
+        $subMenu.forEach(function (subMenu) {
+            const menuExpand = document.createElement('span')
+            menuExpand.classList.add('menu-expand')
+            // menuExpand.innerHTML = '+'
+            subMenu.parentElement.insertBefore(menuExpand, subMenu)
+            if (subMenu.classList.contains('mega-menu')) {
+                subMenu.classList.remove('mega-menu')
+                subMenu.querySelectorAll('ul').forEach(function (ul) {
+                    ul.classList.add('sub-menu')
+                    const menuExpand = document.createElement('span')
+                    menuExpand.classList.add('menu-expand')
+                    menuExpand.innerHTML = '+'
+                    ul.parentElement.insertBefore(menuExpand, ul)
+                })
+            }
         })
 
-        setTimeout(function() {
-          initial_nav.classList.add('section-show')
-        }, 350);
-
-        scrollto(window.location.hash)
-      }
+        $offCanvasNav.querySelectorAll('.menu-expand').forEach(function (item) {
+            item.addEventListener('click', function (e) {
+                e.preventDefault()
+                const parent = this.parentElement
+                if (parent.classList.contains('active')) {
+                    parent.classList.remove('active');
+                    parent.querySelectorAll('.sub-menu').forEach(function (subMenu) {
+                        subMenu.parentElement.classList.remove('active');
+                        slideUp(subMenu)
+                    })
+                } else {
+                    parent.classList.add('active');
+                    slideDown(this.nextElementSibling)
+                    getSiblings(parent).forEach(function (item) {
+                        item.classList.remove('active')
+                        item.querySelectorAll('.sub-menu').forEach(function (subMenu) {
+                            subMenu.parentElement.classList.remove('active');
+                            slideUp(subMenu)
+                        })
+                    })
+                }
+            })
+        })
     }
-  });
+    offCanvasMenu('.offcanvas-menu');
 
-  /**
-   * Skills animation
-   */
-  let skilsContent = select('.skills-content');
-  if (skilsContent) {
-    new Waypoint({
-      element: skilsContent,
-      offset: '80%',
-      handler: function(direction) {
-        let progress = select('.progress .progress-bar', true);
-        progress.forEach((el) => {
-          el.style.width = el.getAttribute('aria-valuenow') + '%'
-        });
-      }
-    })
-  }
+  /*--
+    magnificPopup video view 
+  -----------------------------------*/	
+	$('.popup-video').magnificPopup({
+		type: 'iframe'
+	});
 
-  /**
-   * Testimonials slider
-   */
-  new Swiper('.testimonials-slider', {
-    speed: 600,
-    loop: true,
-    autoplay: {
-      delay: 5000,
-      disableOnInteraction: false
-    },
-    slidesPerView: 'auto',
-    pagination: {
-      el: '.swiper-pagination',
-      type: 'bullets',
-      clickable: true
-    },
-    breakpoints: {
-      320: {
-        slidesPerView: 1,
-        spaceBetween: 20
-      },
+  /*--    
+      Counter Up
+  -----------------------------------*/  
 
-      1200: {
+    $('.counter').counterUp({
+        delay: 10,
+        time: 1500,
+    });
+
+  /*--    
+      Progress Bar
+  -----------------------------------*/  
+
+    if($('.progress-line').length) {
+        $('.progress-line').appear(function(){
+            var el = $(this);
+            var percent = el.data('width');
+            $(el).css('width', percent+'%');
+        }, {accY: 0});
+    }
+ 
+    /*--
+        Case Study Active
+	-----------------------------------*/
+    var swiper = new Swiper('.case-study-active', {
+        slidesPerView: 2,
+        spaceBetween: 30,
+        centeredSlides: true,
+        loop: true,        
+        grabCursor: true,
+        navigation: {
+            nextEl: '.case-study-active .swiper-button-next',
+            prevEl: '.case-study-active .swiper-button-prev',
+        },
+        breakpoints: {
+            0: {
+              slidesPerView: 1,
+            },
+            992: {
+              slidesPerView: 2,
+            },
+          },
+    });
+
+    /*--    
+        Brand Active
+    -----------------------------------*/
+    var swiper = new Swiper(".brand-active .swiper-container", {
+        slidesPerView: 5,
+        spaceBetween: 30,
+        loop: true,
+        breakpoints: {
+          0: {
+            slidesPerView: 1,
+          },
+          576: {
+            slidesPerView: 2,
+            spaceBetween: 20,
+          },
+          768: {
+            slidesPerView: 3,
+          },
+          992: {
+            slidesPerView: 5,
+          },
+        },
+    });
+
+    /*--
+        Team Active
+	-----------------------------------*/
+    var swiper = new Swiper('.team-active', {
         slidesPerView: 3,
-        spaceBetween: 20
+        spaceBetween: 30,
+        loop: true,
+        pagination: {
+            el: ".team-active .swiper-pagination",
+            clickable: true,
+        },
+        breakpoints: {
+          0: {
+            slidesPerView: 1,
+          },
+          576: {
+            slidesPerView: 1,
+          },
+          768: {
+            slidesPerView: 2,
+          },
+          992: {
+            slidesPerView: 3,
+          }
+        }
+    });
+
+    /*--
+        Service-2 Active
+	-----------------------------------*/
+    var swiper = new Swiper('.service-2-active', {
+        slidesPerView: 3,
+        spaceBetween: 30,
+        loop: true,
+        pagination: {
+            el: ".service-2-active .swiper-pagination",
+            clickable: true,
+        },
+        breakpoints: {
+          0: {
+            slidesPerView: 1,
+          },
+          576: {
+            slidesPerView: 1,
+          },
+          768: {
+            slidesPerView: 2,
+          },
+          992: {
+            slidesPerView: 3,
+          }
+        }
+    });
+
+    /*--
+        Service-3 Active
+	-----------------------------------*/
+    var swiper = new Swiper('.service-3-active', {
+        slidesPerView: 3,
+        spaceBetween: 30,
+        loop: true,
+        pagination: {
+            el: ".service-3-active .swiper-pagination",
+            clickable: true,
+        },
+        breakpoints: {
+          0: {
+            slidesPerView: 1,
+          },
+          576: {
+            slidesPerView: 1,
+          },
+          768: {
+            slidesPerView: 2,
+          },
+          992: {
+            slidesPerView: 3,
+          }
+        }
+    });
+
+    /*--
+        Testimonial Active
+	-----------------------------------*/
+    var swiper = new Swiper('.testimonial-active', {
+        slidesPerView: 2,
+        spaceBetween: 30,
+        loop: true,
+        pagination: {
+            el: ".testimonial-active .swiper-pagination",
+            clickable: true,
+        },
+        navigation: {
+            nextEl: '.testimonial-active .swiper-button-next',
+            prevEl: '.testimonial-active .swiper-button-prev',
+        },
+        breakpoints: {
+          0: {
+            slidesPerView: 1,
+          },
+          576: {
+            slidesPerView: 1,
+          },
+          768: {
+            slidesPerView: 2,
+          },
+          992: {
+            slidesPerView: 2,
+          }
+        }
+    });
+
+    /*--
+        Testimonial-2 Active
+	-----------------------------------*/
+    var swiper = new Swiper('.testimonial-2-active', {
+        slidesPerView: 1,
+        spaceBetween: 30,
+        loop: true,        
+        pagination: {
+            el: ".testimonial-2-active .swiper-pagination",
+            clickable: true,
+        },
+    });
+
+    /*--
+        Service Active
+	-----------------------------------*/
+    var swiper = new Swiper('.service-2-active', {
+        slidesPerView: 3,
+        spaceBetween: 30,
+        loop: true,
+        pagination: {
+            el: ".service-2-active .swiper-pagination",
+            clickable: true,
+        },
+        breakpoints: {
+          0: {
+            slidesPerView: 1,
+          },
+          576: {
+            slidesPerView: 1,
+          },
+          768: {
+            slidesPerView: 2,
+          },
+          992: {
+            slidesPerView: 3,
+          }
+        }
+    });
+
+    /*--
+        Testimonial-3 Active
+	-----------------------------------*/
+    var swiper = new Swiper('.testimonial-3-active', {
+        slidesPerView: 1,
+        spaceBetween: 30,
+        loop: true,        
+        pagination: {
+            el: ".testimonial-3-active .swiper-pagination",
+            clickable: true,
+        },
+    });
+
+    /*--
+        Testimonial-4 Active
+	-----------------------------------*/
+    var swiper = new Swiper('.testimonial-4-active', {
+        slidesPerView: 1,
+        spaceBetween: 20,
+        loop: true, 
+        navigation: {
+          nextEl: '.testimonial-4-active .swiper-button-next',
+          prevEl: '.testimonial-4-active .swiper-button-prev',
+        },
+    });
+
+    /*--
+        Testimonial-7 Active
+	-----------------------------------*/
+    var swiper = new Swiper('.testimonial-7-active', {
+        slidesPerView: 3,
+        spaceBetween: 20,
+        centeredSlides: true,
+        loop: true,
+        pagination: {
+          el: ".testimonial-7-active .swiper-pagination",
+          clickable: true,
+        },
+        breakpoints: {
+          0: {
+            slidesPerView: 1,
+          },
+          576: {
+            slidesPerView: 1,
+          },
+          768: {
+            slidesPerView: 2,
+            centeredSlides: false,
+          },
+          992: {
+            slidesPerView: 3,
+          }
+        }
+    });
+
+     /*--
+        Service-6 Active
+	-----------------------------------*/
+    var swiper = new Swiper('.service-6-active', {
+      slidesPerView: 3,
+      spaceBetween: 30,
+      loop: true,
+      pagination: {
+          el: ".service-6-active .swiper-pagination",
+          clickable: true,
+      },
+      breakpoints: {
+        0: {
+          slidesPerView: 1,
+        },
+        576: {
+          slidesPerView: 2,
+        },
+        768: {
+          slidesPerView: 2,
+        },
+        992: {
+          slidesPerView: 3,
+        }
       }
-    }
   });
 
-  /**
-   * Porfolio isotope and filter
-   */
-  window.addEventListener('load', () => {
-    let portfolioContainer = select('.portfolio-container');
-    if (portfolioContainer) {
-      let portfolioIsotope = new Isotope(portfolioContainer, {
-        itemSelector: '.portfolio-item',
-        layoutMode: 'fitRows'
-      });
-
-      let portfolioFilters = select('#portfolio-flters li', true);
-
-      on('click', '#portfolio-flters li', function(e) {
-        e.preventDefault();
-        portfolioFilters.forEach(function(el) {
-          el.classList.remove('filter-active');
-        });
-        this.classList.add('filter-active');
-
-        portfolioIsotope.arrange({
-          filter: this.getAttribute('data-filter')
-        });
-      }, true);
-    }
-
+  /*--
+        Testimonial-8 Active
+    -----------------------------------*/
+    var swiper = new Swiper('.testimonial-8-active', {
+      slidesPerView: 1,
+      spaceBetween: 30,
+      loop: true,  
+      pagination: {
+        el: ".testimonial-8-active .swiper-pagination",
+        clickable: true,
+      },      
   });
 
-  /**
-   * Initiate portfolio lightbox 
-   */
-  const portfolioLightbox = GLightbox({
-    selector: '.portfolio-lightbox'
-  });
+    /*--
+        AOS
+    -----------------------------------*/   
+    AOS.init({
+        duration: 1200,
+        once: true,
+    });
 
-  /**
-   * Initiate portfolio details lightbox 
-   */
-  const portfolioDetailsLightbox = GLightbox({
-    selector: '.portfolio-details-lightbox',
-    width: '90%',
-    height: '90vh'
-  });
 
-  /**
-   * Portfolio details slider
-   */
-  new Swiper('.portfolio-details-slider', {
-    speed: 400,
-    loop: true,
-    autoplay: {
-      delay: 5000,
-      disableOnInteraction: false
-    },
-    pagination: {
-      el: '.swiper-pagination',
-      type: 'bullets',
-      clickable: true
-    }
-  });
 
-})()
-// Typing Animation Section 
-const typedTextSpan = document.querySelector(".typed-text");
-const cursorSpan = document.querySelector(".cursor");
 
-const textArray = ["Web Developer", "Freelancer"];
-const typingDelay = 100;
-const erasingDelay = 100;
-const newTextDelay = 400; // Delay between current and next text
-let textArrayIndex = 0;
-let charIndex = 0;
-
-function type() {
-  if (charIndex < textArray[textArrayIndex].length) {
-    if(!cursorSpan.classList.contains("typing")) cursorSpan.classList.add("typing");
-    typedTextSpan.textContent += textArray[textArrayIndex].charAt(charIndex);
-    charIndex++;
-    setTimeout(type, typingDelay);
-  } 
-  else {
-    cursorSpan.classList.remove("typing");
-  	setTimeout(erase, newTextDelay);
-  }
-}
-
-function erase() {
-	if (charIndex > 0) {
-    if(!cursorSpan.classList.contains("typing")) cursorSpan.classList.add("typing");
-    typedTextSpan.textContent = textArray[textArrayIndex].substring(0, charIndex-1);
-    charIndex--;
-    setTimeout(erase, erasingDelay);
-  } 
-  else {
-    cursorSpan.classList.remove("typing");
-    textArrayIndex++;
-    if(textArrayIndex>=textArray.length) textArrayIndex=0;
-    setTimeout(type, typingDelay + 1100);
-  }
-}
-
-document.addEventListener("DOMContentLoaded", function() { // On DOM Load initiate the effect
-  if(textArray.length) setTimeout(type, newTextDelay + 250);
-});
